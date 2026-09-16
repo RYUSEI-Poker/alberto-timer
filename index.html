@@ -480,6 +480,7 @@
   <div class="seg" id="start-seg">
     <button data-struct="yosen" class="active">予選 DAY1</button>
     <button data-struct="kessho">決勝 FINAL</button>
+    <button data-struct="shonan">SHONAN LEAGUE</button>
   </div>
   <div class="start-info">
     <div class="start-info-item">
@@ -582,6 +583,7 @@
     <div class="seg" id="footer-seg">
       <button data-struct="yosen" class="active">予選</button>
       <button data-struct="kessho">決勝</button>
+      <button data-struct="shonan">SHONAN</button>
     </div>
     <div class="controls">
       <button class="ctrl-btn" id="btn-prev" title="Previous (←)">
@@ -693,6 +695,29 @@
         { type:'level', num:15, sb:100, bb:200, ante:200, minutes:20 },
         { type:'level', num:16, sb:150, bb:300, ante:300, minutes:20 },
         { type:'level', num:17, sb:200, bb:400, ante:400, minutes:20 },
+      ]
+    },
+    shonan: {
+      name: 'SHONAN', tag: 'SHONAN POKER LEAGUE', sub: 'SHONAN POKER LEAGUE',
+      startingStack: 500, defaultEntries: 18,
+      schedule: [
+        { type:'level', num:1,  sb:1,   bb:2,    ante:2,    minutes:30 },
+        { type:'level', num:2,  sb:2,   bb:5,    ante:5,    minutes:30 },
+        { type:'break', num:1,  minutes:10, note:'1点カラーアップ' },
+        { type:'level', num:3,  sb:5,   bb:10,   ante:10,   minutes:30 },
+        { type:'level', num:4,  sb:10,  bb:15,   ante:15,   minutes:30 },
+        { type:'level', num:5,  sb:10,  bb:20,   ante:20,   minutes:30 },
+        { type:'level', num:6,  sb:20,  bb:40,   ante:40,   minutes:30 },
+        { type:'break', num:2,  minutes:10 },
+        { type:'level', num:7,  sb:30,  bb:60,   ante:60,   minutes:30 },
+        { type:'level', num:8,  sb:50,  bb:100,  ante:100,  minutes:30 },
+        { type:'level', num:9,  sb:75,  bb:150,  ante:150,  minutes:30 },
+        { type:'break', num:3,  minutes:10, note:'チップレース（5点撤去）' },
+        { type:'level', num:10, sb:100, bb:200,  ante:200,  minutes:30 },
+        { type:'level', num:11, sb:200, bb:400,  ante:400,  minutes:30 },
+        { type:'level', num:12, sb:300, bb:600,  ante:600,  minutes:30 },
+        { type:'level', num:13, sb:400, bb:800,  ante:800,  minutes:30 },
+        { type:'level', num:14, sb:500, bb:1000, ante:1000, minutes:30 },
       ]
     }
   };
