@@ -80,7 +80,8 @@
   }
   /* segmented structure toggle */
   .seg {
-    display: inline-flex; border: 1px solid rgba(255,255,255,0.22); border-radius: 999px;
+    display: inline-flex; flex-wrap: wrap; justify-content: center;
+    border: 1px solid rgba(255,255,255,0.22); border-radius: 999px;
     overflow: hidden; background: rgba(255,255,255,0.03);
   }
   .seg button {
@@ -480,7 +481,8 @@
   <div class="seg" id="start-seg">
     <button data-struct="yosen" class="active">予選 DAY1</button>
     <button data-struct="kessho">決勝 FINAL</button>
-    <button data-struct="shonan">SHONAN LEAGUE</button>
+    <button data-struct="shonan">SHONAN</button>
+    <button data-struct="ema">EMA</button>
   </div>
   <div class="start-info">
     <div class="start-info-item">
@@ -584,6 +586,7 @@
       <button data-struct="yosen" class="active">予選</button>
       <button data-struct="kessho">決勝</button>
       <button data-struct="shonan">SHONAN</button>
+      <button data-struct="ema">EMA</button>
     </div>
     <div class="controls">
       <button class="ctrl-btn" id="btn-prev" title="Previous (←)">
@@ -617,6 +620,12 @@
         <button class="stat-btn" id="entries-minus">−</button>
         <span class="fstat-val" id="f-entries">18</span>
         <button class="stat-btn" id="entries-plus">+</button>
+      </div>
+      <div class="fstat" id="addon-block" style="display:none;">
+        <span class="fstat-label">アドオン</span>
+        <button class="stat-btn" id="addons-minus">−</button>
+        <span class="fstat-val" id="f-addons">0</span>
+        <button class="stat-btn" id="addons-plus">+</button>
       </div>
       <div class="fstat editable" id="stack-block" title="クリックで初期スタックを変更">
         <span class="fstat-label">初期スタック</span>
@@ -719,6 +728,30 @@
         { type:'level', num:13, sb:400, bb:800,  ante:800,  minutes:30 },
         { type:'level', num:14, sb:500, bb:1000, ante:1000, minutes:30 },
       ]
+    },
+    ema: {
+      name: 'EMA', tag: 'EMA トーナメント', sub: 'EMA Tournament',
+      startingStack: 500, defaultEntries: 18, addonChips: 300,
+      schedule: [
+        { type:'level', num:1,  sb:1,   bb:2,    ante:2,    minutes:20 },
+        { type:'level', num:2,  sb:3,   bb:6,    ante:6,    minutes:20 },
+        { type:'level', num:3,  sb:5,   bb:10,   ante:10,   minutes:20 },
+        { type:'break', num:1,  minutes:5,  note:'1点カラーアップ' },
+        { type:'level', num:4,  sb:10,  bb:15,   ante:15,   minutes:15 },
+        { type:'level', num:5,  sb:10,  bb:20,   ante:20,   minutes:15 },
+        { type:'break', num:2,  minutes:10, note:'アドオン +300点' },
+        { type:'level', num:6,  sb:15,  bb:30,   ante:30,   minutes:15 },
+        { type:'level', num:7,  sb:25,  bb:50,   ante:50,   minutes:15 },
+        { type:'level', num:8,  sb:35,  bb:70,   ante:70,   minutes:10 },
+        { type:'level', num:9,  sb:50,  bb:100,  ante:100,  minutes:10 },
+        { type:'level', num:10, sb:75,  bb:150,  ante:150,  minutes:10 },
+        { type:'level', num:11, sb:100, bb:200,  ante:200,  minutes:10 },
+        { type:'level', num:12, sb:150, bb:300,  ante:300,  minutes:10 },
+        { type:'level', num:13, sb:200, bb:400,  ante:400,  minutes:5 },
+        { type:'level', num:14, sb:300, bb:600,  ante:600,  minutes:5 },
+        { type:'level', num:15, sb:400, bb:800,  ante:800,  minutes:5 },
+        { type:'level', num:16, sb:500, bb:1000, ante:1000, minutes:30 },
+      ]
     }
   };
 
@@ -741,6 +774,8 @@
   let entries = STRUCTURES[structKey].defaultEntries;
   let players = STRUCTURES[structKey].defaultEntries;
   let startingStack = STRUCTURES[structKey].startingStack;
+  let addonChips = STRUCTURES[structKey].addonChips || 0;
+  let addons = 0;
 
   // ─── ELEMENTS ─────────────────────────────────────────────
   const $ = id => document.getElementById(id);
@@ -817,9 +852,12 @@
     entries = st.defaultEntries;
     players = st.defaultEntries;
     startingStack = st.startingStack;
+    addonChips = st.addonChips || 0;
+    addons = 0;
     rebuildScheduleTable();
     applyStructureInfo();
     updateSegs();
+    updateAddonVisibility();
     render();
     renderStats();
   }
@@ -863,13 +901,24 @@
     if (players < 1) players = 1;
     if (players > entries) players = entries;
     if (entries < 1) entries = 1;
-    const avg = players > 0 ? Math.round(entries * startingStack / players) : 0;
+    if (addons < 0) addons = 0;
+    if (addons > entries) addons = entries;
+    const totalChips = entries * startingStack + addons * addonChips;
+    const avg = players > 0 ? Math.round(totalChips / players) : 0;
     $('stat-players').textContent = players;
     $('stat-entries').textContent = entries;
     $('stat-avg').textContent = fmtNum(avg);
     $('f-players').textContent = players;
     $('f-entries').textContent = entries;
     $('f-stack').textContent = fmtNum(startingStack);
+    const fa = $('f-addons'); if (fa) fa.textContent = addons;
+  }
+  function updateAddonVisibility() {
+    const el = $('addon-block');
+    if (!el) return;
+    el.style.display = addonChips > 0 ? '' : 'none';
+    const lbl = el.querySelector('.fstat-label');
+    if (lbl) lbl.textContent = 'アドオン+' + fmtNum(addonChips);
   }
 
   // Time until the next break (seconds) → H:MM:SS / M:SS
@@ -1128,6 +1177,8 @@
   $('players-plus').addEventListener('click', () => { if (players < entries) players++; renderStats(); });
   $('entries-minus').addEventListener('click', () => { if (entries > players) entries--; renderStats(); });
   $('entries-plus').addEventListener('click', () => { entries++; renderStats(); });
+  $('addons-minus').addEventListener('click', () => { if (addons > 0) addons--; renderStats(); });
+  $('addons-plus').addEventListener('click', () => { if (addons < entries) addons++; renderStats(); });
   $('stack-block').addEventListener('click', () => {
     const v = prompt('初期スタックを入力してください', startingStack);
     if (v !== null) {
@@ -1174,6 +1225,7 @@
   rebuildScheduleTable();
   applyStructureInfo();
   updateSegs();
+  updateAddonVisibility();
   renderStats();
   render();
 </script>
